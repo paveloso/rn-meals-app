@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Button, TouchableOpacity, Platform } from 'react-native';
 
+// import { HeaderButtons, Item } from 'react-navigation-header-buttons';
+import { HamburgerHeaderButtons, Item } from '../components/SettingsHeaderButton';
+
 import { CATEGORIES } from '../data/dummy-data';
 import GridTile from '../components/GridTile'
 import Colors from '../constants/Colors';
@@ -24,8 +27,14 @@ const CategoriesScreen = props => {
     );
 };
 
-CategoriesScreen.navigationOptions = {
-    headerTitle: 'Meal Categories',
+CategoriesScreen.navigationOptions = navData => {
+    return {
+        headerTitle: 'Meal Categories',
+        headerLeft: () => 
+            <HamburgerHeaderButtons>
+                <Item title="add" iconName="menu" onPress={() => {navData.navigation.toggleDrawer();}} />
+            </HamburgerHeaderButtons>
+    };
 };
 
 const styles = StyleSheet.create({
