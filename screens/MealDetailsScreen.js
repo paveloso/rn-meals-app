@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView, Image } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { MaterialHeaderButtons, Item } from '../components/CustomHeaderButton';
 import DefaultText from '../components/DefaultText';
-
-import { MEALS } from '../data/dummy-data';
+import { toggleFavorite } from '../store/actions/meals';
 
 const ListItem = props => {
     return <View style={styles.listItem}>
@@ -13,9 +13,26 @@ const ListItem = props => {
 };
 
 const MealDetailsScreen = props => {
+
+    const  availableMeals = useSelector(state => state.meals.meals);
+    const  currentMealIsFavorite = useSelector(state => state.meals.favoriteMeals.some(meal => meal.id === mealId));
     const mealId = props.navigation.getParam('mealId');
 
-    const selectedMeal = MEALS.find(meal => meal.id === mealId);
+    const selectedMeal = availableMeals.find(meal => meal.id === mealId);
+
+    const dispatch = useDispatch();
+
+    const toggleFavoriteHandler = useCallback(() => {
+        dispatch(toggleFavorite(mealId));
+    }, [dispatch, mealId]);
+
+    useEffect(() => {
+        props.navigation.setParams({toggleFav: toggleFavoriteHandler});
+    }, [toggleFavoriteHandler]);
+
+    useEffect(() => {
+        props.navigation.setParams({isFav: currentMealIsFavorite});
+    }, [currentMealIsFavorite]);
 
     return (
         <ScrollView>
@@ -38,13 +55,16 @@ const MealDetailsScreen = props => {
 };
 
 MealDetailsScreen.navigationOptions = (navigationData) => {
-    const mealId = navigationData.navigation.getParam('mealId');
-    const selectedMeal = MEALS.find(meal => meal.id === mealId);
+    // const mealId = navigationData.navigation.getParam('mealId');
+    const mealTitle = navigationData.navigation.getParam('mealTitle');
+    const toggleFavorite = navigationData.navigation.getParam('toggleFav');
+    const isFavorite = navigationData.navigation.getParam('isFav');
+    // const selectedMeal = MEALS.find(meal => meal.id === mealId);
     return {
-        headerTitle: selectedMeal.title,
+        headerTitle: mealTitle,
         headerRight: () => 
             <MaterialHeaderButtons>
-              <Item title="add" iconName="control-point" onPress={() => console.warn('add')} />
+              <Item title="add" iconName={isFavorite ? 'check-circle' : 'control-point'} onPress={toggleFavorite} />
             </MaterialHeaderButtons>
     };
 };

@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Switch, Platform } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 import { HamburgerHeaderButtons, Item as I1 } from '../components/SettingsHeaderButton';
 import { CheckBoxHeaderButtons, Item as I2 } from '../components/SaveHeaderButton';
+
+import { setFilters } from '../store/actions/meals';
 // export { Item } from 'react-navigation-header-buttons';
 
 import Colors from '../constants/Colors';
@@ -28,6 +31,8 @@ const FiltersScreen = props => {
     const [isVegan, setIsVegan] = useState(false);
     const [isVegeterian, setIsVegeterian] = useState(false);
 
+    const dispatch = useDispatch();
+
     const saveFilters = useCallback(() => {
         const appliedFilters = {
             glutenFree: isGlutenFree,
@@ -36,8 +41,8 @@ const FiltersScreen = props => {
             vegeterian: isVegeterian
         };
 
-        console.log(appliedFilters);
-    }, [isGlutenFree, isLactoseFree, isVegan, isVegeterian]);
+        dispatch(setFilters(appliedFilters));
+    }, [isGlutenFree, isLactoseFree, isVegan, isVegeterian, dispatch]);
 
     useEffect(() => {
         navigation.setParams({
